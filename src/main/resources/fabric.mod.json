@@ -15,7 +15,7 @@
 	"icon": "assets/skyra/icon.png",
 	"environment": "*",
 	"entrypoints": {
-		"main": [
+		"client": [
 			{
 				"value": "app.lyrablock.skyra.Skyra",
 				"adapter": "kotlin"

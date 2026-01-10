@@ -1,13 +1,33 @@
 package app.lyrablock.skyra
 
-import net.fabricmc.api.ModInitializer
+import app.lyrablock.skyra.feature.mining.prediction.HiddenBlocksRegistry
+import app.lyrablock.skyra.feature.mining.prediction.MiningPrediction
+import app.lyrablock.skyra.utils.hypixel.HypixelStatus
+import net.fabricmc.api.ClientModInitializer
+import net.hypixel.modapi.HypixelModAPI
+import net.hypixel.modapi.packet.impl.clientbound.event.ClientboundLocationPacket
 import org.apache.logging.log4j.LogManager
-object Skyra : ModInitializer {
+import org.koin.core.context.startKoin
+import org.koin.dsl.module
+
+object Skyra : ClientModInitializer {
     private val logger = LogManager.getLogger("skyra")
-	override fun onInitialize() {
-		// This code runs as soon as Minecraft is in a mod-load-ready state.
-		// However, some things (like resources) may still be uninitialized.
-		// Proceed with mild caution.
-		logger.info("Hello Fabric world!")
-	}
+    override fun onInitializeClient() {
+        HypixelModAPI.getInstance().subscribeToEventPacket(ClientboundLocationPacket::class.java)
+
+        val core = module {
+            single {
+                HiddenBlocksRegistry()
+                HypixelStatus()
+            }
+        }
+
+        startKoin {
+            printLogger()
+            modules(
+                core,
+                MiningPrediction.module,
+            )
+        }
+    }
 }

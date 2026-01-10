@@ -14,11 +14,7 @@ base {
 }
 
 repositories {
-	// Add repositories to retrieve artifacts from in here.
-	// You should only use this when depending on other mods because
-	// Loom adds the essential maven repositories to download Minecraft and libraries from automatically.
-	// See https://docs.gradle.org/current/userguide/declaring_repositories.html
-	// for more information about repositories.
+	maven { url = uri("https://repo.hypixel.net/repository/Hypixel/") }
 }
 
 dependencies {
@@ -28,6 +24,11 @@ dependencies {
 
 	implementation("net.fabricmc.fabric-api:fabric-api:${project.property("fabric_version")}")
 	implementation("net.fabricmc:fabric-language-kotlin:${project.property("fabric_kotlin_version")}")
+	implementation("net.hypixel:mod-api:1.0.1")
+	implementation(platform(libs.koin.bom))
+	include(platform(libs.koin.bom))
+	implementation(libs.koin.core)
+	include(libs.koin.core)
 }
 
 tasks.processResources {

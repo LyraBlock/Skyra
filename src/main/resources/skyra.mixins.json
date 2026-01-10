@@ -1,14 +1,16 @@
 {
-	"required": true,
-	"package": "app.lyrablock.skyra.mixin",
-	"compatibilityLevel": "JAVA_25",
-	"mixins": [
-		"ExampleMixin"
-	],
-	"injectors": {
-		"defaultRequire": 1
-	},
-	"overwrites": {
-		"requireAnnotations": true
-	}
+  "required": true,
+  "package": "app.lyrablock.skyra.mixin",
+  "compatibilityLevel": "JAVA_25",
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "overwrites": {
+    "requireAnnotations": true
+  },
+  "client": [
+    "FabricBlockModelRendererMixin",
+    "LevelRendererMixin",
+    "MultiPlayerGameModeMixin"
+  ]
 }
