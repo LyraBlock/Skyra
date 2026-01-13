@@ -8,6 +8,7 @@ import net.hypixel.modapi.HypixelModAPI
 import net.hypixel.modapi.packet.impl.clientbound.event.ClientboundLocationPacket
 import org.apache.logging.log4j.LogManager
 import org.koin.core.context.startKoin
+import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 
 object Skyra : ClientModInitializer {
@@ -16,10 +17,8 @@ object Skyra : ClientModInitializer {
         HypixelModAPI.getInstance().subscribeToEventPacket(ClientboundLocationPacket::class.java)
 
         val core = module {
-            single {
-                HiddenBlocksRegistry()
-                HypixelStatus()
-            }
+            singleOf(::HiddenBlocksRegistry)
+            singleOf(::HypixelStatus)
         }
 
         startKoin {
