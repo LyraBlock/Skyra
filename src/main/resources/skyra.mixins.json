@@ -9,8 +9,10 @@
     "requireAnnotations": true
   },
   "client": [
+    "ClientPacketListenerMixin",
     "FabricBlockModelRendererMixin",
     "LevelRendererMixin",
-    "MultiPlayerGameModeMixin"
+    "MultiPlayerGameModeMixin",
+    "accessor.PlayerTabOverlayAccessor"
   ]
 }
