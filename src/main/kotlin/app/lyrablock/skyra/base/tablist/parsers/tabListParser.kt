@@ -16,7 +16,7 @@ interface TabListParser<out T : ParsedLine> {
     fun parse(line: String): T?
 }
 
-fun getColonSeparate(string: String): Pair<String, String?> {
+fun getColonSeparated(string: String): Pair<String, String?> {
     val colon = string.indexOf(':')
     if (colon == -1) return string to null
     val key = string.substring(0, colon).trim()

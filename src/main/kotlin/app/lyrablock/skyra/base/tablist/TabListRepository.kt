@@ -3,7 +3,7 @@ package app.lyrablock.skyra.base.tablist
 import app.lyrablock.skyra.base.tablist.parsers.ParsedLine
 import app.lyrablock.skyra.base.tablist.parsers.StatLine
 import app.lyrablock.skyra.base.tablist.parsers.TabListParser
-import app.lyrablock.skyra.base.tablist.parsers.getColonSeparate
+import app.lyrablock.skyra.base.tablist.parsers.getColonSeparated
 import app.lyrablock.skyra.event.ClientPacketEvents
 import app.lyrablock.skyra.mixin.accessor.PlayerTabOverlayAccessor
 import app.lyrablock.skyra.utils.MC
@@ -80,7 +80,7 @@ class TabListRepository(val parsers: List<TabListParser<*>>) : KoinComponent {
             // Handle the case of a widget title line.
             // That is, lines like "Stats:", "Skills:", or "Fire Sale: 23h".
             if (!line.startsWith(' ')) {
-                val (key, value) = getColonSeparate(line)
+                val (key, value) = getColonSeparated(line)
                 val widget = TitleInfo(key, value)
                 widgetTitleInfo[key] = widget
                 activeWidgetTitle = key
