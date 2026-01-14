@@ -1,5 +1,6 @@
 package app.lyrablock.skyra
 
+import app.lyrablock.skyra.base.tablist.TabListRepository
 import app.lyrablock.skyra.feature.mining.prediction.HiddenBlocksRegistry
 import app.lyrablock.skyra.feature.mining.prediction.MiningPrediction
 import app.lyrablock.skyra.utils.hypixel.HypixelStatus
@@ -25,6 +26,7 @@ object Skyra : ClientModInitializer {
             printLogger()
             modules(
                 core,
+                TabListRepository.module,
                 MiningPrediction.module,
             )
         }
