@@ -1,6 +1,7 @@
 package app.lyrablock.skyra.mixin;
 
-import app.lyrablock.skyra.event.DestroyBlockEvents;
+import app.lyrablock.skyra.event.BlockDestructionEvent;
+import app.lyrablock.skyra.utils.event.EventBus;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.multiplayer.MultiPlayerGameMode;
@@ -21,13 +22,14 @@ public class MultiPlayerGameModeMixin {
 
     @Inject(method = "startDestroyBlock", at = @At("HEAD"))
     void skyra$startDestroyBlock(BlockPos pos, Direction direction, CallbackInfoReturnable<Boolean> cir) {
-        DestroyBlockEvents.START_DESTROY.invoker().onStartDestroy(pos, direction);
+        EventBus.Default.dispatch(new BlockDestructionEvent.Start(pos, direction));
     }
 
     @Inject(method = "destroyBlock", at = @At("HEAD"))
     void skyra$destroyBlock(BlockPos pos, CallbackInfoReturnable<Boolean> cir) {
-        if (isDestroying)
-            DestroyBlockEvents.DESTROY.invoker().onDestroy(pos);
+        if (isDestroying) {
+            EventBus.Default.dispatch(new BlockDestructionEvent.Destroy(pos));
+        }
     }
 
     @Inject(method = "continueDestroyBlock", at = @At("HEAD"))
@@ -36,6 +38,6 @@ public class MultiPlayerGameModeMixin {
 
     @Inject(method = "stopDestroyBlock", at = @At("HEAD"))
     void stopDestroyBlock(CallbackInfo ci) {
-        DestroyBlockEvents.STOP_DESTROY.invoker().onStopDestroy();
+        EventBus.Default.dispatch(new BlockDestructionEvent.Stop());
     }
 }

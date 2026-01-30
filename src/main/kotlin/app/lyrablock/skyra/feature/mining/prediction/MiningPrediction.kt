@@ -1,11 +1,12 @@
 package app.lyrablock.skyra.feature.mining.prediction
 
-import app.lyrablock.skyra.event.DestroyBlockEvents
-import app.lyrablock.skyra.event.LevelRenderEvents
+import app.lyrablock.skyra.event.BlockDestructionEvent
+import app.lyrablock.skyra.event.LevelRenderEvent
 import app.lyrablock.skyra.feature.mining.Mineable
 import app.lyrablock.skyra.utils.MC
+import app.lyrablock.skyra.utils.event.EventBus
+import app.lyrablock.skyra.utils.event.EventCollector
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents
-import net.minecraft.client.renderer.rendertype.RenderType
 import net.minecraft.client.resources.model.ModelBakery
 import net.minecraft.core.BlockPos
 import org.apache.logging.log4j.LogManager
@@ -15,7 +16,7 @@ import kotlin.properties.Delegates.observable
 
 class MiningPrediction(
     val hiddenBlocksRegistry: HiddenBlocksRegistry
-) {
+) : AutoCloseable {
     private val logger = LogManager.getLogger("Skyra/MiningPrediction")
     private val shouldRun get() = true
 
@@ -30,19 +31,23 @@ class MiningPrediction(
             floor(9.0 * elapsedTicks / ticksToMine.toDouble()).toInt().coerceAtMost(9)
         }
 
+    val eventCollector = EventCollector(EventBus)
+
     init {
-        DestroyBlockEvents.START_DESTROY.register { pos, _ -> onStartDestroy(pos) }
-        DestroyBlockEvents.STOP_DESTROY.register { onStopDestroy() }
+        eventCollector.register(this::onStartDestroy)
+        eventCollector.register<BlockDestructionEvent.Stop>(this::onStopDestroy)
         ServerTickEvents.END_SERVER_TICK.register { onServerTick() }
-        LevelRenderEvents.MODIFY_BREAKING_ANIMATION.register(this::modifyBreaking)
+        eventCollector.register(this::modifyBreaking)
     }
 
-    private fun modifyBreaking(pos: BlockPos, type: RenderType): RenderType {
-        if (current?.pos != pos) return type
-        return ModelBakery.DESTROY_TYPES[stage ?: 0]
+    private fun modifyBreaking(event: LevelRenderEvent.RenderBreakingAnimation) {
+        val pos = event.pos
+        if (current?.pos == pos)
+            event.renderType = ModelBakery.DESTROY_TYPES[stage ?: 0]
     }
 
-    private fun onStartDestroy(pos: BlockPos) {
+    private fun onStartDestroy(event: BlockDestructionEvent.Start) {
+        val pos = event.pos
         if (!shouldRun) return
         // Reset elapsed ticks if the block has changed
         current?.let { if (it.pos != pos) elapsedTicks = 0 }
@@ -70,6 +75,10 @@ class MiningPrediction(
             ++elapsedTicks
         }
 
+    }
+
+    override fun close() {
+        eventCollector.unregisterAll()
     }
 
     companion object {

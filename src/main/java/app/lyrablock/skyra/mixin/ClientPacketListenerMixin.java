@@ -1,6 +1,7 @@
 package app.lyrablock.skyra.mixin;
 
-import app.lyrablock.skyra.event.ClientPacketEvents;
+import app.lyrablock.skyra.event.ClientPacketEvent;
+import app.lyrablock.skyra.utils.event.EventBus;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.multiplayer.ClientPacketListener;
@@ -24,6 +25,6 @@ abstract public class ClientPacketListenerMixin {
 
     @Inject(method = "handlePlayerInfoUpdate", at = @At("TAIL"))
     void skyra$handlePlayerInfoUpdate(ClientboundPlayerInfoUpdatePacket packet, CallbackInfo ci) {
-        ClientPacketEvents.PLAYER_INFO_UPDATE.invoker().onPacket(packet, listedPlayers);
+        EventBus.Default.dispatch(new ClientPacketEvent.PlayerInfoUpdate(packet, listedPlayers));
     }
 }

@@ -4,9 +4,11 @@ import app.lyrablock.skyra.base.tablist.parsers.ParsedLine
 import app.lyrablock.skyra.base.tablist.parsers.StatLine
 import app.lyrablock.skyra.base.tablist.parsers.TabListParser
 import app.lyrablock.skyra.base.tablist.parsers.getColonSeparated
-import app.lyrablock.skyra.event.ClientPacketEvents
+import app.lyrablock.skyra.event.ClientPacketEvent
 import app.lyrablock.skyra.mixin.accessor.PlayerTabOverlayAccessor
 import app.lyrablock.skyra.utils.MC
+import app.lyrablock.skyra.utils.event.EventBus
+import app.lyrablock.skyra.utils.event.EventCollector
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -27,14 +29,9 @@ class TabListRepository(val parsers: List<TabListParser<*>>) : KoinComponent {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
     private val parseMutex = Mutex()
 
+    val eventCollector = EventCollector(EventBus)
     init {
-        ClientPacketEvents.PLAYER_INFO_UPDATE.register { _, listedPlayers ->
-            scope.launch {
-                parseMutex.withLock {
-                    onUpdate(listedPlayers)
-                }
-            }
-        }
+        eventCollector.register(this::onUpdate)
     }
 
     // Ensures atomic updates to the exposed data.
@@ -50,7 +47,15 @@ class TabListRepository(val parsers: List<TabListParser<*>>) : KoinComponent {
     val widgets get() = data.widgets
     val widgetTitleInfo get() = data.widgetTitleInfo
 
-    private fun onUpdate(listedPlayers: Set<PlayerInfo>) {
+    private fun onUpdate(event: ClientPacketEvent.PlayerInfoUpdate) {
+        scope.launch {
+            parseMutex.withLock {
+                update(event.listedPlayers)
+            }
+        }
+    }
+
+    private fun update(listedPlayers: Set<PlayerInfo>) {
         val tabList = MC.gui.tabList ?: return
         // A fully loaded tab list in SkyBlock always consists of 80 lines.
         val rawListedPlayers = listedPlayers.takeIf { it.size == 80 } ?: return

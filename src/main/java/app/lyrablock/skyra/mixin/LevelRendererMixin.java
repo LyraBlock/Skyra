@@ -1,6 +1,7 @@
 package app.lyrablock.skyra.mixin;
 
-import app.lyrablock.skyra.event.LevelRenderEvents;
+import app.lyrablock.skyra.event.LevelRenderEvent;
+import app.lyrablock.skyra.utils.event.EventBus;
 import com.llamalad7.mixinextras.sugar.Local;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.rendertype.RenderType;
@@ -22,6 +23,8 @@ public class LevelRendererMixin {
     RenderType skyra$getRenderType(
             RenderType renderType, @Local(name = "pos") BlockPos pos
     ) {
-        return LevelRenderEvents.MODIFY_BREAKING_ANIMATION.invoker().modify(pos, renderType);
+        final var event = new LevelRenderEvent.RenderBreakingAnimation(pos, renderType);
+        EventBus.Default.dispatchSync(event);
+        return event.getRenderType();
     }
 }
