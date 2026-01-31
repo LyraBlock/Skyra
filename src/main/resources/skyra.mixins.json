@@ -14,5 +14,8 @@
     "LevelRendererMixin",
     "MultiPlayerGameModeMixin",
     "accessor.PlayerTabOverlayAccessor"
+  ],
+  "mixins": [
+    "MinecraftServerMixin"
   ]
 }

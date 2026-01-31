@@ -16,7 +16,6 @@ object Skyra : ClientModInitializer {
     private val logger = LogManager.getLogger("skyra")
     override fun onInitializeClient() {
         HypixelModAPI.getInstance().subscribeToEventPacket(ClientboundLocationPacket::class.java)
-
         val core = module {
             singleOf(::HiddenBlocksRegistry)
             singleOf(::HypixelStatus)

@@ -2,11 +2,11 @@ package app.lyrablock.skyra.feature.mining.prediction
 
 import app.lyrablock.skyra.event.BlockDestructionEvent
 import app.lyrablock.skyra.event.LevelRenderEvent
+import app.lyrablock.skyra.event.ServerTickEvent
 import app.lyrablock.skyra.feature.mining.Mineable
 import app.lyrablock.skyra.utils.MC
 import app.lyrablock.skyra.utils.event.EventBus
 import app.lyrablock.skyra.utils.event.EventCollector
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents
 import net.minecraft.client.resources.model.ModelBakery
 import net.minecraft.core.BlockPos
 import org.apache.logging.log4j.LogManager
@@ -36,7 +36,7 @@ class MiningPrediction(
     init {
         eventCollector.register(this::onStartDestroy)
         eventCollector.register<BlockDestructionEvent.Stop>(this::onStopDestroy)
-        ServerTickEvents.END_SERVER_TICK.register { onServerTick() }
+        eventCollector.register<ServerTickEvent.EndTick>(this::onServerTick)
         eventCollector.register(this::modifyBreaking)
     }
 
