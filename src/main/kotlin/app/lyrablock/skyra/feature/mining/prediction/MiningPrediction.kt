@@ -31,13 +31,13 @@ class MiningPrediction(
             floor(9.0 * elapsedTicks / ticksToMine.toDouble()).toInt().coerceAtMost(9)
         }
 
-    val eventCollector = EventCollector(EventBus)
+    private val events = EventCollector(EventBus)
 
     init {
-        eventCollector.register(this::onStartDestroy)
-        eventCollector.register<BlockDestructionEvent.Stop>(this::onStopDestroy)
-        eventCollector.register<ServerTickEvent.EndTick>(this::onServerTick)
-        eventCollector.register(this::modifyBreaking)
+        events.register(this::onStartDestroy)
+        events.register<BlockDestructionEvent.Stop>(this::onStopDestroy)
+        events.register<ServerTickEvent.EndTick>(this::onServerTick)
+        events.register(this::modifyBreaking)
     }
 
     private fun modifyBreaking(event: LevelRenderEvent.RenderBreakingAnimation) {
@@ -82,7 +82,7 @@ class MiningPrediction(
     }
 
     override fun close() {
-        eventCollector.unregisterAll()
+        events.unregisterAll()
     }
 
     companion object {
