@@ -42,8 +42,9 @@ class MiningPrediction(
 
     private fun modifyBreaking(event: LevelRenderEvent.RenderBreakingAnimation) {
         val pos = event.pos
-        if (current?.pos == pos)
-            event.renderType = ModelBakery.DESTROY_TYPES[stage ?: 0]
+        val stage = stage
+        if (current?.pos == pos && stage != null)
+            event.renderType = ModelBakery.DESTROY_TYPES[stage]
     }
 
     private fun onStartDestroy(event: BlockDestructionEvent.Start) {
@@ -71,6 +72,9 @@ class MiningPrediction(
             ++elapsedTicks
 
         if (elapsedTicks == ticksToMine) {
+            // TODO: The block should be visually broken (even if culling as in XRay mods.
+            //       we don't care much about XRay, because we are not providing real illegal advantages,
+            //       nor giving any advantage.
 //            hiddenBlocksRegistry.add(pos, age = 1_000_000_000)
             ++elapsedTicks
         }
